@@ -1,23 +1,18 @@
-import { ethers } from "hardhat";
+const { ethers } = require('hardhat')
 
-async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+const deploy = async () => {
+    const [deployer] = await ethers.getSigners();
+    console.log("Deploying contract with the account:", deployer.address)
 
-  const lockedAmount = ethers.utils.parseEther("1");
+    const PlatziPunks = await  ethers.getContractFactory("PlatziPunks");
+    const deployed = await PlatziPunks.deploy();
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  await lock.deployed();
-
-  console.log("Lock with 1 ETH deployed to:", lock.address);
+    console.log("Platzi Punk is deployed at:", deployed.address )
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+deploy().then( () => process.exit(0))
+.catch( error => {
+    console.log(error)
+    process.exit(1);
+})
+
